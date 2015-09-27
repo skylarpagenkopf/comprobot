@@ -2,8 +2,8 @@ function  w(serPort)
 
 % vars to track
 followingWall = 0;
-haveLeftFirstContact = 0;
-atFirstContact = 0;
+returnedToStart = 0;
+leftStart = 0;
 globloc = [0,0,0];
 startloc = [0,0,0];
 
@@ -41,8 +41,20 @@ followWall(serport);
 SetFwdVelAngVelCreate(serPort,0.15,0);
 
 % loop forever, will break when reach the starting point
-% while ~returnedToOrigin
-% end
+while ~returnedToStart
+    if ~leftStart && sqrt( (globloc(1) - startloc(1))^2 + (globloc(2) - startloc(2))^2 ) > .3
+        disp('left start');
+        leftStart = 1;
+    end
+    if leftStart && sqrt( (globloc(1) - startloc(1))^2 + (globloc(2) - startloc(2))^2 ) <= .3
+        disp('returned to start');
+        returnedToStart = 1;
+        SetFwdVelAngVelCreate(serPort,0,0);
+        BeepRoomba(serPort);
+    end
+    % uncomment this line if you want to see it work inside of an obj
+    % SetFwdVelAngVelCreate(serPort,0.15,-1);
+end
     
 end
 
