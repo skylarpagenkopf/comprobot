@@ -34,7 +34,7 @@ while ~followingWall
     pause(0.2);
 end
 
-orientToWall(serPort, followingWall, globloc);
+orientToWall(serPort);
 
 followWall(serport);
 
@@ -104,7 +104,7 @@ function orientToWall(serPort)
     while ~WallSensor
         turnAngle(serPort, 0.2, 5); 
         WallSensor = WallSensorReadRoomba(serPort);
-        display('seeking wall');
+        display('seeking second wall contact');
     end
     
     WallSensor = WallSensorReadRoomba(serPort);      
