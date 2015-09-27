@@ -34,26 +34,49 @@ while ~followingWall
     pause(0.2);
 end
 
-orientToWall(serPort, followingWall, globloc);
-
-followWall(serport);
-
-SetFwdVelAngVelCreate(serPort,0.15,0);
+% orientToWall(serPort);
+% 
+% followWall(serport);
+% 
+% SetFwdVelAngVelCreate(serPort,0.15,0);
 
 % loop forever, will break when reach the starting point
 while ~returnedToStart
-    if ~leftStart && sqrt( (globloc(1) - startloc(1))^2 + (globloc(2) - startloc(2))^2 ) > .3
+    pause(0.2);
+    % update x,y position
+    distance = DistanceSensorRoomba(serPort);
+    angle = AngleSensorRoomba(serPort);
+    globloc = updatePosition(globloc, distance, angle);
+    % get bump sensors
+    [ BumpRight, BumpLeft, ~, ~, ~, BumpFront] = BumpsWheelDropsSensorsRoomba(serPort); % Read Bumpers
+    wall = WallSensorReadRoomba(serPort);
+    if ~leftStart && sqrt( (globloc(1) - startloc(1))^2 + (globloc(2) - startloc(2))^2 ) > .25
         disp('left start');
         leftStart = 1;
     end
-    if leftStart && sqrt( (globloc(1) - startloc(1))^2 + (globloc(2) - startloc(2))^2 ) <= .3
+    if leftStart && sqrt( (globloc(1) - startloc(1))^2 + (globloc(2) - startloc(2))^2 ) <= .25
         disp('returned to start');
         returnedToStart = 1;
         SetFwdVelAngVelCreate(serPort,0,0);
         BeepRoomba(serPort);
-    end
     % uncomment this line if you want to see it work inside of an obj
     % SetFwdVelAngVelCreate(serPort,0.15,-1);
+    % if we bumped, figure out what to do
+    elseif BumpFront || BumpRight
+        disp('bump front/right');
+        turnAngle(serPort,0.15,1);
+    elseif BumpLeft
+        disp('bump left');
+        turnAngle(serPort,0.15,1);
+    % following the wall
+    elseif wall
+        disp('following wall');
+        SetFwdVelAngVelCreate(serPort,0.15,0);
+    % lost the wall
+    elseif ~wall
+        disp('lost wall');
+        SetFwdVelAngVelCreate(serPort,0.15,-1);
+    end
 end
     
 end
