@@ -1,12 +1,9 @@
 function  w(serPort)
 
     % vars to track
-    followingWall = 0;
-    returnedToStart = 0;
-    leftStart = 0;
     globloc = [0,0,0];
     startloc = [0,0,0];
-    goalloc = [-2,-3,0];
+    goalloc = [4,0,0];
     slope = [0,0];
 
     while sqrt((globloc(1) - goalloc(1))^2 + (globloc(2) - goalloc(2))^2 ) >= .3
@@ -24,16 +21,14 @@ function  w(serPort)
                SetFwdVelAngVelCreate(serPort,0,0);
                % if the first bump, update start loc
                disp('init bump');
-               followingWall = 1;
                startloc(1) = globloc(1);
                startloc(2) = globloc(2);
                startloc(3) = globloc(3);
                disp(startloc);
             end
-
-            pause(0.2);
         
         end
+        pause(0.2);
     end
 
     SetFwdVelAngVelCreate(serPort,0,0);
@@ -77,11 +72,11 @@ function [] = followM(serPort, globloc, goalloc, slope)
     if slope(2) == -1
         turn = mod(turn + 180, 360);
     end
-    
+    disp(turn)
     if turn > 1 && turn < 359
         disp(turn);
         turnAngle(serPort,.2,turn);
     end
-    
+    disp('fwd');
     SetFwdVelAngVelCreate(serPort,0.15,0);
 end
