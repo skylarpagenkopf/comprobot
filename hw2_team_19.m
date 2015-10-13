@@ -4,6 +4,13 @@
 
 function hw2_team_19(serPort)
 
+    figure(1);
+    xvalues = [0];
+    yvalues = [0];
+    thetavalues = [0];
+    rho = [1];
+    count = 2;
+    
     % vars to track
     reachedGoal = 0;
     followingObstacle = 0;
@@ -17,6 +24,19 @@ function hw2_team_19(serPort)
     SetFwdVelAngVelCreate(serPort,0.2,0);
     
     while ~reachedGoal
+        xvalues = [xvalues,globloc(1)];
+        yvalues = [yvalues,globloc(2)];
+        thetavalues = [thetavalues,globloc(3)];        
+        rho = [rho,count];
+        count = count + 1;
+        figure(1);
+        plot(xvalues,yvalues);
+        xlim([-5,5]);
+        ylim([-1,10]);
+        set(gca,'xtick',-5:5);
+        set(gca,'ytick',-1:10);
+        
+        drawnow;
          % update x,y position
          disp(globloc(1));
          distance = DistanceSensorRoomba(serPort);
@@ -28,7 +48,7 @@ function hw2_team_19(serPort)
              leftbumploc = 1;
          end
          % if we reached the goal
-         if sqrt( (globloc(1) - goalloc(1))^2 + (globloc(2) - goalloc(2))^2 ) <= .30
+         if sqrt( (globloc(1) - goalloc(1))^2 + (globloc(2) - goalloc(2))^2 ) <= .20
              disp('reached goal');
              reachedGoal = 1;
              SetFwdVelAngVelCreate(serPort,0,0);
