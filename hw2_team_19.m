@@ -32,9 +32,9 @@ function hw2_team_19(serPort)
         figure(1);
         plot(xvalues,yvalues);
         xlim([-5,5]);
-        ylim([-1,10]);
+        ylim([-5,5]);
         set(gca,'xtick',-5:5);
-        set(gca,'ytick',-1:10);
+        set(gca,'ytick',-5:5);
         
         drawnow;
          % update x,y position
