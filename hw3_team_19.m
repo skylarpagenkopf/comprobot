@@ -8,6 +8,7 @@ function hw3_team_19(serPort)
     lastupdate = 0;
     followingObstacle = 0;
     globloc = [0,0,0];
+    globlocA = [0,0,0];
     % track bounds of explored area
     graphXMax = 0;
     graphXMin = 0;
@@ -18,15 +19,21 @@ function hw3_team_19(serPort)
     occupiedY = [];
     
     % start going a random direction
+    dir = rand();
+    dir = dir * 360;
+    turnAngle(serPort,0.2,dir);
 
 %     % start going forward along line
 %     SetFwdVelAngVelCreate(serPort,0.2,0);
     
-    while lastupdate < 500
+    while lastupdate < 50
          % update x,y position
          distance = DistanceSensorRoomba(serPort);
          angle = AngleSensorRoomba(serPort);
-         globloc = updatePosition(globloc, distance, angle);
+         globlocA = updatePosition(globlocA, distance, angle); 
+         diameter = .34;        
+         globloc(1) = floor(globlocA(1)/diameter);
+         globloc(2) = floor(globlocA(2)/diameter); 
          wall = WallSensorReadRoomba(serPort);
          [ BumpRight, BumpLeft, ~, ~, ~, BumpFront] = BumpsWheelDropsSensorsRoomba(serPort); % Read Bumpers
          % update max x, y for graphing later
@@ -43,8 +50,6 @@ function hw3_team_19(serPort)
          % if we bumped into an obstacle, begin following obstacle
          if BumpRight || BumpLeft || BumpFront
              disp('bump');
-             occupiedX = [occupiedX, globloc(1)];
-             occupiedY = [occupiedY, globloc(2)];
              followingObstacle = 1;
              turnAngle(serPort,0.2,45);
          % if we are following the wall decide whether to leave or keep
@@ -54,15 +59,43 @@ function hw3_team_19(serPort)
              % have followed the object all the way and can leave in random
              % direction away from the wall
              disp('follow wall or line');
-             occupiedX = [occupiedX, globloc(1)];
-             occupiedY = [occupiedY, globloc(2)];
+             if ~(any(occupiedX == globloc(1)) && any(occupiedY == globloc(2)))
+                occupiedX = [occupiedX, globloc(1)];
+                occupiedY = [occupiedY, globloc(2)];
+                lastupdate = 0;
+             elseif lastupdate > 25
+                dir = rand();
+                dir = dir * 360;
+                turnAngle(serPort,0.2,dir);
+                followingObstacle = 0;
+             end
              % if we keep following, update grid, reset lastupdate to 0
              SetFwdVelAngVelCreate(serPort,0.2,0);
          elseif ~followingObstacle
+             if ~(any(occupiedX == globloc(1)) && any(occupiedY == globloc(2)))
+                occupiedX = [occupiedX, globloc(1)];
+                occupiedY = [occupiedY, globloc(2)];
+                lastupdate = 0;
+             elseif lastupdate > 25
+                dir = rand();
+                dir = dir * 360;
+                turnAngle(serPort,0.2,dir);
+                followingObstacle = 0;
+             end
              SetFwdVelAngVelCreate(serPort,0.2,0);
          % if we are following the wall and found a corner, turn
          elseif followingObstacle && ~wall
              disp('go around corner');
+             if ~(any(occupiedX == globloc(1)) && any(occupiedY == globloc(2)))
+                occupiedX = [occupiedX, globloc(1)];
+                occupiedY = [occupiedY, globloc(2)];
+                lastupdate = 0;
+             elseif lastupdate > 25
+                dir = rand();
+                dir = dir * 360;
+                turnAngle(serPort,0.2,dir);
+                followingObstacle = 0;
+             end
              SetFwdVelAngVelCreate(serPort,0.2,-1);
          end
          lastupdate = lastupdate + 1;
@@ -70,9 +103,9 @@ function hw3_team_19(serPort)
     end
     
     % plot occupied grid
-    diameter = .34;
-    graphCellW = floor((graphXMax - graphXMin) / diameter);
-    graphCellH = floor((graphYMax - graphYMin) / diameter);
+    diameter = 1;
+    graphCellW = graphXMax - graphXMin;
+    graphCellH = graphYMax - graphYMin;
     figure(1);
     axis([min(graphXMin,graphYMin),max(graphXMax,graphYMax),min(graphXMin,graphYMin),max(graphXMax,graphYMax)])
     for i = -graphCellH-1:graphCellH-1
