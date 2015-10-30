@@ -68,6 +68,7 @@ function hw3_team_19(serPort)
                 dir = dir * 360;
                 turnAngle(serPort,0.2,dir);
                 followingObstacle = 0;
+                travelDist(serPort,0.2, diameter);
              end
              % if we keep following, update grid, reset lastupdate to 0
              SetFwdVelAngVelCreate(serPort,0.2,0);
@@ -76,11 +77,12 @@ function hw3_team_19(serPort)
                 occupiedX = [occupiedX, globloc(1)];
                 occupiedY = [occupiedY, globloc(2)];
                 lastupdate = 0;
-             elseif lastupdate > 25
-                dir = rand();
-                dir = dir * 360;
-                turnAngle(serPort,0.2,dir);
-                followingObstacle = 0;
+%              elseif lastupdate > 25
+%                 dir = rand();
+%                 dir = dir * 360;
+%                 turnAngle(serPort,0.2,dir);
+%                 followingObstacle = 0;
+%                 travelDist(serPort,0.2, diameter);
              end
              SetFwdVelAngVelCreate(serPort,0.2,0);
          % if we are following the wall and found a corner, turn
@@ -95,6 +97,7 @@ function hw3_team_19(serPort)
                 dir = dir * 360;
                 turnAngle(serPort,0.2,dir);
                 followingObstacle = 0;
+                travelDist(serPort,0.2, diameter);
              end
              SetFwdVelAngVelCreate(serPort,0.2,-1);
          end
