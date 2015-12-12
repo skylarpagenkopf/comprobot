@@ -15,7 +15,7 @@ function hw5_colortracker_team_19(serPort)
     angle = 0;
     % loop to see if target has moved
     while (1)
-        img = imread('http://192.168.1.100/img/snapshot.cgi?');
+        img = imread('http://192.168.1.103/snapshot.cgi?user=admin&pwd=&resolution=16&rate=0');
         img = imresize(img, .25);
         target_mask = threshold(rgb, img);
         [area, center, radius] = target_details(target_mask);
@@ -77,7 +77,7 @@ end
 % the image color you want to track. This will give you a threshold range for color
 % segmentation.
 function [rgb, img] = init()
-    img = imread('http://192.168.1.100/img/snapshot.cgi?');
+    img = imread('http://192.168.1.103/snapshot.cgi?user=admin&pwd=&resolution=16&rate=0');
     img = imresize(img, .25);        % find what works best later
     figure(1);
     imshow(img);
