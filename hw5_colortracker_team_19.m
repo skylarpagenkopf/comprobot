@@ -17,9 +17,6 @@ function hw5_colortracker_team_19(serPort)
     % loop to see if target has moved
     while (1)
         img = imread('http://192.168.1.103/snapshot.cgi?user=admin&pwd=&resolution=16&rate=0');
-%         img = imread('target_init.jpg');
-%         img = imresize(img, .25);        % find what works best later
-
         target_mask = threshold(hsv, img);
         [area, center, radius] = target_details(target_mask);
         
@@ -79,8 +76,6 @@ end
 % segmentation.
 function [hsv, img] = init()
     img = imread('http://192.168.1.103/snapshot.cgi?user=admin&pwd=&resolution=16&rate=0');
-%     img = imread('target_init.jpg');
-%     img = imresize(img, .25);        % find what works best later
     figure(1);
     imshow(img);
     [x,y] = ginput(1);
