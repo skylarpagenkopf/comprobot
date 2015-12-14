@@ -2,7 +2,7 @@
 % sap2147 - Skylar Pagenkopf
 % rfl2119 - Rich Landy
 
-function hw5_door_knock(serPort)
+function hw5_doortracker_team_19(serPort)
     %state 1 - init centered in hallway 
     %state 2 - travelling down hallway, looking for door
     %state 3 - travelling down hallway, door located
