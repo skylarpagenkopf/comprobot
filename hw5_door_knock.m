@@ -9,9 +9,11 @@ function hw5_door_knock(serPort)
     %state 4 - door being bumped
     %state 5 - waiting for open door
     %state 6 - door opened
-    hsv = [0.6553, 0.3729, 0.4627];
+    %hsv = [132, 151, 145];
+    hsv = [0.5444, 0.1200, 0.4902];
     state = 1;
     while state < 6
+        state
        if state == 1
           %search for door
           door = findDoor(hsv);
@@ -20,8 +22,7 @@ function hw5_door_knock(serPort)
               SetFwdVelAngVelCreate(serPort, 0.2, 0);
           else
               state = 3;
-              turnAngle(serPort, 0.2, door);
-              SetFwdVelAngVelCreate(serPort, 0.2, 0);
+              SetFwdVelAngVelCreate(serPort, 0.2, door);
           end
        end
        
@@ -29,7 +30,7 @@ function hw5_door_knock(serPort)
             %search for door
             door = findDoor(hsv);
             if door
-              state = 3; 
+              state = 3;       
               SetFwdVelAngVelCreate(serPort, 0.2, door);
             end
        end
@@ -68,14 +69,24 @@ function hw5_door_knock(serPort)
              state = 6; 
           end
        end
+       
+       pause(0.2);
     end
 end
 
 function [door] = findDoor(hsv) 
     img = imread('http://192.168.1.103/snapshot.cgi?user=admin&pwd=&resolution=16&rate=0');
-    target_mask = threshold(hsv, img);
+    [target_mask, img] = threshold(hsv, img);
     [area, center, radius] = target_details(target_mask);
     img_center = size(img)/2;
+    anglet = .2;
+    
+       % for testing
+        figure(1);
+        imshow(img);
+        hold on
+        viscircles(center,radius);
+        hold off
 
     % rotate left
     if center(1) < (1-anglet)*img_center(2)
@@ -100,20 +111,26 @@ function [door] = detectDoor(hsv, orig_area)
     [area, center, radius] = target_details(target_mask);
     door = 1;
     %work on this
-    if orig_area > area
+    if orig_area/2 > area
        door = 0; 
     end
 end
 
 % Threshold the image, and find the largest blob in the image which will be your target
 % (use a large enough target).
-function [mask] = threshold(hsv, img)
+function [mask, img] = threshold(hsv, img)
     hsv_img = rgb2hsv(img);
-    hBand = hsv_img(:, :, 1); 
-    hextra = .05;                 % as long as floor is not red/pink should work
-    hThresholdLow = hsv(1)-hextra;
-    hThresholdHigh = hsv(1)+hextra;
-    mask = (hBand >= hThresholdLow) & (hBand <= hThresholdHigh);
+    rBand = hsv_img(:, :, 1); 
+%     gBand = img(:, :, 2); 
+%     bBand = img(:, :, 3); 
+    hextra = 0.05;                 % as long as floor is not red/pink should work
+    rThresholdLow = hsv(1)-hextra;
+    rThresholdHigh = hsv(1)+hextra;
+%     gThresholdLow = hsv(2)-hextra;
+%     gThresholdHigh = hsv(2)+hextra;    
+%     bThresholdLow = hsv(3)-hextra;
+%     bThresholdHigh = hsv(3)+hextra;
+    mask = (rBand >= rThresholdLow) & (rBand <= rThresholdHigh);
 end
 
 % Calculate the centroid and area of the blob (in pixels)
